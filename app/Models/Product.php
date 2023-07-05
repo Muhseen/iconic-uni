@@ -18,6 +18,7 @@ class Product extends Model
         'colors',
         'keywords'
     ];
+    protected $casts = ['colors' => 'array', 'keywords' => 'array'];
     public function category()
     {
         return $this->belongsTo(Category::class);

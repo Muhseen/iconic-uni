@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
+
 
 class StoreProductRequest extends FormRequest
 {
@@ -11,7 +14,8 @@ class StoreProductRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return 1;
+        return auth()->user()->can('add-product') || auth()->user()->hasRole('admin');
     }
 
     /**
@@ -22,7 +26,24 @@ class StoreProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required',
+            'category_id' => 'required|exists:catgeories,id',
+            'quantity' => 'numeric|min:1|required',
+            'price' => 'numeric| min:1| required',
+            'cost_price' => 'numeric|required',
+            'description' => 'nullable',
+            'colors' => 'nullable',
+            'keywords' => 'nullable'
+        ];
+    }
+    public function before(Request $request): array
+    {
+        return [
+            function (Validator $validator) use ($request) {
+                if ($request->cost_price <= $request->price) {
+                    $validator->errors()->add('Price Error', 'Selling price is less than or equal to Cost Price');
+                }
+            }
         ];
     }
 }

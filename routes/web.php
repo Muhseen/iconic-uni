@@ -1,8 +1,12 @@
 <?php
 
+use App\Http\Controllers\MainPageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderItemsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,9 +19,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get(
+    '/',
+    [MainPageController::class, 'index']
+);
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -29,7 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::resource('product', ProductController::class);
     Route::resource('order', OrderController::class);
     Route::resource('category', CategoryController::class);
